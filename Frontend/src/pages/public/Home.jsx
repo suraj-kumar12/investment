@@ -18,10 +18,12 @@ import { Button } from '../../components/common/Button';
 import { INVESTMENT_PLANS } from '../../utils/investmentCalculator';
 import { formatCurrency } from '../../utils/formatters';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 
 export const Home = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { isAuthenticated, isAdmin } = useAuth();
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -96,7 +98,7 @@ export const Home = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                <Link to="/register" className="w-full sm:w-auto">
+                <Link to={isAuthenticated ? (isAdmin ? '/admin' : '/dashboard/investments/new') : '/register'} className="w-full sm:w-auto">
                   <Button variant="primary" size="lg" icon={ArrowRight} className="w-full sm:w-auto">
                     Start Investing
                   </Button>
@@ -272,7 +274,7 @@ export const Home = () => {
                 </div>
 
                 <div className="pt-8">
-                  <Link to="/register">
+                  <Link to={isAuthenticated ? (isAdmin ? '/admin' : `/dashboard/investments/new?plan=${plan.id}`) : '/register'}>
                     <Button variant={plan.isPopular ? 'primary' : 'secondary'} className="w-full">
                       Invest Now
                     </Button>

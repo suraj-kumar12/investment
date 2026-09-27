@@ -128,8 +128,14 @@ export const authService = {
     return users[index];
   },
 
-  logout() {
-    localStorage.removeItem('demo_token');
-    localStorage.removeItem('demo_user_id');
+  async logout() {
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.warn('Backend API logout error:', err.message);
+    } finally {
+      localStorage.removeItem('demo_token');
+      localStorage.removeItem('demo_user_id');
+    }
   },
 };

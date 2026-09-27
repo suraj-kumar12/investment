@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Calculator, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
@@ -12,10 +12,15 @@ import { useToast } from '../../context/ToastContext';
 
 export const NewInvestment = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  const [amount, setAmount] = useState('120');
+  const paramAmount = searchParams.get('amount');
+  const paramPlan = searchParams.get('plan');
+  const defaultInitialAmount = paramAmount || (paramPlan === 'starter' ? '12' : paramPlan === 'growth' ? '60' : paramPlan === 'premium' ? '120' : '120');
+
+  const [amount, setAmount] = useState(defaultInitialAmount);
   const [duration, setDuration] = useState('1 Year');
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);

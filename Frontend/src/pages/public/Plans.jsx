@@ -5,8 +5,10 @@ import { formatCurrency } from '../../utils/formatters';
 import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
 import { Calculator, ArrowRight } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export const Plans = () => {
+  const { isAuthenticated, isAdmin } = useAuth();
   const [calcAmount, setCalcAmount] = useState('120');
   const calcResult = calculateInvestment(calcAmount);
 
@@ -65,7 +67,7 @@ export const Plans = () => {
                 </div>
               </div>
 
-              <Link to="/register">
+              <Link to={isAuthenticated ? (isAdmin ? '/admin' : `/dashboard/investments/new?plan=${plan.id}`) : '/register'}>
                 <Button variant="primary" className="w-full">
                   Invest Now
                 </Button>
@@ -123,7 +125,7 @@ export const Plans = () => {
               <span className="font-black text-2xl text-white">{formatCurrency(calcResult.maturityValue)}</span>
             </div>
 
-            <Link to="/register">
+            <Link to={isAuthenticated ? (isAdmin ? '/admin' : `/dashboard/investments/new?amount=${calcAmount}`) : '/register'}>
               <Button variant="emerald" className="w-full mt-2" icon={ArrowRight}>
                 Proceed with {formatCurrency(calcAmount || 0)}
               </Button>

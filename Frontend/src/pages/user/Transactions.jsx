@@ -50,7 +50,7 @@ export const Transactions = () => {
 
       {/* Filter & Search Bar Controls */}
       <div className="glass-card p-4 sm:p-6 rounded-3xl border border-slate-800 space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 align-middle">
           <div className="sm:col-span-5">
             <Input
               icon={Search}
