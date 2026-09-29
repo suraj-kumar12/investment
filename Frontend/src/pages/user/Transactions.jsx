@@ -81,7 +81,7 @@ export const Transactions = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none"
-            >
+            > 
               <option value="ALL">All Statuses</option>
               <option value="Successful">Successful</option>
               <option value="Pending">Pending</option>

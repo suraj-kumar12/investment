@@ -92,6 +92,22 @@ export const adminService = {
     return getStoredData('investments', []);
   },
 
+  async getAllPayments() {
+    try {
+      const res = await api.get('/admin/payments');
+      if (res.data) {
+        return res.data.map((p) => ({
+          ...p,
+          id: p.paymentId || p._id,
+        }));
+      }
+    } catch (err) {
+      console.warn('Backend API admin getAllPayments unavailable, falling back to local demo mode');
+    }
+
+    return getStoredData('payments', []);
+  },
+
   async getAllReferrals() {
     try {
       const res = await api.get('/admin/referrals');
@@ -138,5 +154,15 @@ export const adminService = {
     }
 
     return getStoredData('transactions', []);
+  },
+
+  async approvePayment(paymentId) {
+    const res = await api.put(`/admin/payments/${paymentId}/approve`);
+    return res.data;
+  },
+
+  async rejectPayment(paymentId, rejectionReason) {
+    const res = await api.put(`/admin/payments/${paymentId}/reject`, { rejectionReason });
+    return res.data;
   },
 };

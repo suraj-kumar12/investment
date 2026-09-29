@@ -45,13 +45,21 @@ export const investmentService = {
     try {
       const res = await api.post('/investments', { amount, duration });
       if (res.data) {
+        const invData = res.data.investment || res.data;
+        const invId = invData.investmentId || res.data.investmentId || invData.id || invData._id;
         return {
           ...res.data,
-          id: res.data.investmentId || res.data._id,
+          investment: {
+            ...invData,
+            id: invId,
+          },
+          investmentId: invId,
+          id: invId,
+          _id: invData._id || res.data._id,
         };
       }
     } catch (err) {
-      console.warn('Backend API createInvestment unavailable, falling back to local demo mode');
+      console.warn('Backend API createInvestment error:', err.message);
     }
 
     const calc = calculateInvestment(amount);
@@ -87,6 +95,70 @@ export const investmentService = {
     return newInv;
   },
 
+  // -------------------------------------------------------------
+  // USDT (BEP-20) CRYPTO PAYMENT FLOW
+  // -------------------------------------------------------------
+  async createPayment(investmentId) {
+    try {
+      const res = await api.post('/payments/create', { investmentId });
+      if (res.data && res.data.success) {
+        return res.data.payment;
+      }
+    } catch (err) {
+      console.warn('Backend API createPayment unavailable, generating fallback payment details');
+    }
+
+    return {
+      id: `PAY-${Date.now().toString().slice(-6)}`,
+      paymentId: `PAY-${Date.now().toString().slice(-6)}`,
+      investmentId,
+      token: 'USDT',
+      network: 'BSC',
+      receivingAddress: '0xA845c0673FF693da2E64Ff10d91c97B63eB8ae2f',
+      expectedAmount: 12,
+      status: 'PENDING',
+    };
+  },
+
+  async verifyPayment({ paymentId, investmentId, transactionHash }) {
+    const res = await api.post('/payments/verify', {
+      paymentId,
+      investmentId,
+      transactionHash,
+    });
+    return res.data;
+  },
+
+  async submitPaymentProof(formData) {
+    const res = await api.post('/payments/submit-proof', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
+
+  async getPaymentById(id) {
+    try {
+      const res = await api.get(`/payments/${id}`);
+      if (res.data) return res.data;
+    } catch (err) {
+      console.warn('Backend API getPaymentById error:', err.message);
+    }
+    return null;
+  },
+
+  async getMyPayments() {
+    try {
+      const res = await api.get('/payments/my-payments');
+      if (res.data) return res.data;
+    } catch (err) {
+      console.warn('Backend API getMyPayments error:', err.message);
+    }
+    return [];
+  },
+
+  // Retain processMockPayment for demo options
   async processMockPayment(investmentId, { paymentMethod }) {
     try {
       const res = await api.post('/payments/demo', { investmentId, paymentMethod });

@@ -38,9 +38,10 @@ export const NewInvestment = () => {
   };
 
   const handleConfirmCreate = async () => {
+    if (submitting) return;
     setSubmitting(true);
     try {
-      const inv = await investmentService.createPendingInvestment({
+      const response = await investmentService.createPendingInvestment({
         userId: user.id,
         userName: user.name,
         amount: Number(amount),
@@ -48,9 +49,21 @@ export const NewInvestment = () => {
         duration,
       });
 
-      showToast('Investment plan selected! Proceeding to payment.', 'success');
+      const investmentId =
+        response?.investment?.investmentId ||
+        response?.investment?.id ||
+        response?.investment?._id ||
+        response?.investmentId ||
+        response?.id ||
+        response?._id;
+
+      if (!investmentId) {
+        throw new Error("Investment ID was not returned by the API");
+      }
+
+      showToast('Investment plan created! Proceeding to payment.', 'success');
       setConfirmModalOpen(false);
-      navigate(`/dashboard/payment/${inv.id}`);
+      navigate(`/dashboard/payment/${investmentId}`);
     } catch (err) {
       showToast(err.message || 'Failed to create investment', 'error');
     } finally {
@@ -153,7 +166,7 @@ export const NewInvestment = () => {
             <Button variant="secondary" onClick={() => setConfirmModalOpen(false)} className="w-1/2">
               Cancel
             </Button>
-            <Button variant="emerald" isLoading={submitting} onClick={handleConfirmCreate} className="w-1/2">
+            <Button variant="emerald" isLoading={submitting} disabled={submitting} onClick={handleConfirmCreate} className="w-1/2">
               Confirm & Pay
             </Button>
           </div>
