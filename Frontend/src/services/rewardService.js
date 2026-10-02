@@ -12,7 +12,7 @@ export const rewardService = {
         }));
       }
     } catch (err) {
-      console.warn('Backend API getRewards unavailable, falling back to local demo mode');
+      console.warn('Backend API getRewards unavailable, falling back to local fallback');
     }
 
     const rewards = getStoredData('rewards', []);
@@ -25,7 +25,7 @@ export const rewardService = {
       const res = await api.get('/rewards/stats');
       if (res.data) return res.data;
     } catch (err) {
-      console.warn('Backend API getRewardStats unavailable, falling back to local demo mode');
+      console.warn('Backend API getRewardStats unavailable, falling back to local fallback');
     }
 
     const rewards = getStoredData('rewards', []);

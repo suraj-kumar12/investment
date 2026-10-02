@@ -30,17 +30,18 @@ export const AdminRewards = () => {
 
   const filtered = rewards.filter(
     (r) =>
-      r.referrerName.toLowerCase().includes(search.toLowerCase()) ||
-      r.referredName.toLowerCase().includes(search.toLowerCase()) ||
-      r.id.toLowerCase().includes(search.toLowerCase())
+      (r.referrerName || '').toLowerCase().includes(search.toLowerCase()) ||
+      (r.referredName || '').toLowerCase().includes(search.toLowerCase()) ||
+      (r.rewardId || r.id || '').toLowerCase().includes(search.toLowerCase()) ||
+      (r.eligiblePaymentId || '').toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Referral Rewards Ledger</h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">Audit of issued $1.20 referral rewards linked to verified payment events.</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Multi-Level Rewards Audit Ledger</h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">Audit of issued referral rewards (Level 1: 5%, Level 2: 3%, Level 3: 2%, Level 4: 1%) linked to verified payment events.</p>
         </div>
         <div className="w-full sm:w-64">
           <Input icon={Search} placeholder="Search rewards..." value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -55,23 +56,39 @@ export const AdminRewards = () => {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="text-slate-400 border-b border-slate-800 uppercase font-semibold">
-                  <th className="py-3.5 px-4">Reward ID</th>
                   <th className="py-3.5 px-4">Referrer</th>
-                  <th className="py-3.5 px-4">Referred User</th>
-                  <th className="py-3.5 px-4">Eligible Payment ID</th>
+                  <th className="py-3.5 px-4">Investor</th>
+                  <th className="py-3.5 px-4">Level</th>
+                  <th className="py-3.5 px-4">Investment ID</th>
+                  <th className="py-3.5 px-4">Payment ID</th>
+                  <th className="py-3.5 px-4">Investment Amount</th>
+                  <th className="py-3.5 px-4">Percentage</th>
                   <th className="py-3.5 px-4">Reward Amount</th>
                   <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4">Created Date</th>
+                  <th className="py-3.5 px-4">Date</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-slate-200 font-medium">
                 {filtered.map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-900/40">
-                    <td className="py-3.5 px-4 font-mono font-bold text-indigo-400">{r.id}</td>
+                  <tr key={r.rewardId || r.id || r._id} className="hover:bg-slate-900/40">
                     <td className="py-3.5 px-4 font-bold text-white">{r.referrerName}</td>
                     <td className="py-3.5 px-4 text-slate-300">{r.referredName}</td>
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                        Level {r.level || 1}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 font-mono text-slate-300">{r.investmentId || 'N/A'}</td>
                     <td className="py-3.5 px-4 font-mono text-purple-400">{r.eligiblePaymentId}</td>
-                    <td className="py-3.5 px-4 font-extrabold text-emerald-400">+{formatCurrency(r.rewardAmount)}</td>
+                    <td className="py-3.5 px-4 font-bold text-slate-200">
+                      {formatCurrency(r.investmentAmount || 0)}
+                    </td>
+                    <td className="py-3.5 px-4 font-bold text-indigo-300">
+                      {r.percentage ? `${r.percentage}%` : '5%'}
+                    </td>
+                    <td className="py-3.5 px-4 font-extrabold text-emerald-400">
+                      +{formatCurrency(r.rewardAmount || 0)}
+                    </td>
                     <td className="py-3.5 px-4">
                       <Badge status={r.status}>{r.status}</Badge>
                     </td>

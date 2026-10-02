@@ -165,4 +165,40 @@ export const adminService = {
     const res = await api.put(`/admin/payments/${paymentId}/reject`, { rejectionReason });
     return res.data;
   },
+
+  async getAllWithdrawals() {
+    try {
+      const res = await api.get('/admin/withdrawals');
+      if (res.data) {
+        return res.data.map((w) => ({
+          ...w,
+          id: w.withdrawalId || w._id,
+        }));
+      }
+    } catch (err) {
+      console.warn('Backend API admin getAllWithdrawals unavailable, falling back to local demo mode');
+    }
+
+    return getStoredData('withdrawals', []);
+  },
+
+  async approveWithdrawal(withdrawalId) {
+    const res = await api.put(`/admin/withdrawals/${withdrawalId}/approve`);
+    return res.data;
+  },
+
+  async processWithdrawal(withdrawalId) {
+    const res = await api.put(`/admin/withdrawals/${withdrawalId}/processing`);
+    return res.data;
+  },
+
+  async completeWithdrawal(withdrawalId) {
+    const res = await api.put(`/admin/withdrawals/${withdrawalId}/complete`);
+    return res.data;
+  },
+
+  async rejectWithdrawal(withdrawalId, rejectionReason) {
+    const res = await api.put(`/admin/withdrawals/${withdrawalId}/reject`, { rejectionReason });
+    return res.data;
+  },
 };

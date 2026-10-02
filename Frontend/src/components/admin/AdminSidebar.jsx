@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   Shield,
+  Wallet,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -23,6 +24,7 @@ export const AdminSidebar = ({ onCloseMobile }) => {
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
     { name: 'Users', path: '/admin/users', icon: Users },
     { name: 'Investments', path: '/admin/investments', icon: TrendingUp },
+    { name: 'Withdrawals', path: '/admin/withdrawals', icon: Wallet },
     { name: 'Referrals', path: '/admin/referrals', icon: Share2 },
     { name: 'Rewards', path: '/admin/rewards', icon: Gift },
     { name: 'Transactions', path: '/admin/transactions', icon: Receipt },

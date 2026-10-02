@@ -129,12 +129,12 @@ export const Investments = () => {
               <div className="space-y-1.5 pt-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-400">Duration Progress</span>
-                  <span className="font-semibold text-indigo-300">{inv.progressPercent || 0}%</span>
+                  <span className="font-semibold text-indigo-300">{inv.progressPercent ?? 0}%</span>
                 </div>
                 <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
                   <div
                     className="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-500"
-                    style={{ width: `${inv.progressPercent || 0}%` }}
+                    style={{ width: `${inv.progressPercent ?? 0}%` }}
                   />
                 </div>
               </div>

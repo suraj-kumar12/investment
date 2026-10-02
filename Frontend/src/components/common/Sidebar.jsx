@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
   ShieldCheck,
+  Wallet,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -27,6 +28,7 @@ export const Sidebar = ({ onCloseMobile }) => {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Investments', path: '/dashboard/investments', icon: TrendingUp },
     { name: 'Investment Plans', path: '/dashboard/plans', icon: PieChart },
+    { name: 'Withdraw Funds', path: '/dashboard/withdraw', icon: Wallet },
     { name: 'Referrals', path: '/dashboard/referrals', icon: Users },
     { name: 'Rewards', path: '/dashboard/rewards', icon: Gift },
     { name: 'Transactions', path: '/dashboard/transactions', icon: Receipt },

@@ -41,8 +41,10 @@ export const MockPayment = () => {
 
   // Form states
   const [txHash, setTxHash] = useState('');
+  const [txHashError, setTxHashError] = useState('');
   const [screenshotFile, setScreenshotFile] = useState(null);
   const [screenshotPreview, setScreenshotPreview] = useState(null);
+  const [screenshotError, setScreenshotError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   // Copy status indicators
@@ -99,18 +101,35 @@ export const MockPayment = () => {
     setTimeout(() => setCopiedType(''), 2500);
   };
 
-  // Image upload preview handler
+  // Image upload preview & format/size validation handler
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        showToast('Please upload an image file (PNG, JPG, JPEG, WEBP)', 'error');
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+      const ext = file.name.split('.').pop()?.toLowerCase();
+
+      if (!allowedTypes.includes(file.type.toLowerCase()) && !allowedExts.includes(ext)) {
+        const msg = 'Please upload a JPG, JPEG, PNG, or WEBP image.';
+        setScreenshotError(msg);
+        showToast(msg, 'error');
+        setScreenshotFile(null);
+        setScreenshotPreview(null);
+        e.target.value = '';
         return;
       }
+
       if (file.size > 5 * 1024 * 1024) {
-        showToast('Image file size must be less than 5MB', 'error');
+        const msg = 'Payment screenshot must be 5 MB or smaller.';
+        setScreenshotError(msg);
+        showToast(msg, 'error');
+        setScreenshotFile(null);
+        setScreenshotPreview(null);
+        e.target.value = '';
         return;
       }
+
+      setScreenshotError('');
       setScreenshotFile(file);
       setScreenshotPreview(URL.createObjectURL(file));
     }
@@ -122,20 +141,54 @@ export const MockPayment = () => {
       URL.revokeObjectURL(screenshotPreview);
     }
     setScreenshotPreview(null);
+    setScreenshotError('');
   };
 
-  // Submit proof handler
+  // Submit proof handler with complete frontend validation
   const handleSubmitProof = async (e) => {
     e.preventDefault();
 
-    if (!txHash.trim()) {
-      showToast('Please enter your Transaction Hash / Reference No (UTR)', 'error');
+    setTxHashError('');
+    setScreenshotError('');
+
+    const cleanTxHash = txHash ? txHash.trim() : '';
+
+    // Step 1: Validate Reference No / TxHash
+    if (!cleanTxHash) {
+      const msg = 'Transaction Hash / UTR / Reference No. is required.';
+      setTxHashError(msg);
+      showToast(msg, 'error');
       return;
     }
 
+    // Step 2: Validate Screenshot presence
     if (!screenshotFile && !screenshotPreview) {
-      showToast('Please upload your payment receipt screenshot as proof', 'error');
+      const msg = 'Payment screenshot is required.';
+      setScreenshotError(msg);
+      showToast(msg, 'error');
       return;
+    }
+
+    // Step 3: Validate Screenshot type if new file selected
+    if (screenshotFile) {
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+      const ext = screenshotFile.name.split('.').pop()?.toLowerCase();
+
+      if (!allowedTypes.includes(screenshotFile.type.toLowerCase()) && !allowedExts.includes(ext)) {
+        const msg = 'Please upload a JPG, JPEG, PNG, or WEBP image.';
+        setScreenshotError(msg);
+        showToast(msg, 'error');
+        return;
+      }
+
+      // Step 4: Validate Screenshot size (<= 5MB)
+      if (screenshotFile.size > 5 * 1024 * 1024) {
+        const msg = 'Payment screenshot must be 5 MB or smaller.';
+        setScreenshotError(msg);
+        showToast(msg, 'error');
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -144,7 +197,7 @@ export const MockPayment = () => {
       formData.append('investmentId', investment.id);
       formData.append('paymentId', paymentDetails?.id || paymentDetails?.paymentId || '');
       formData.append('paymentMethod', paymentMethod);
-      formData.append('transactionHash', txHash.trim());
+      formData.append('transactionHash', cleanTxHash);
       if (screenshotFile) {
         formData.append('screenshot', screenshotFile);
       }
@@ -154,13 +207,18 @@ export const MockPayment = () => {
       setSubmitting(false);
       setSubmissionState('SUBMITTED');
       if (res.payment?.screenshotUrl) {
-        setScreenshotPreview(`http://localhost:5000${res.payment.screenshotUrl}`);
+        setScreenshotPreview(
+          res.payment.screenshotUrl.startsWith('http')
+            ? res.payment.screenshotUrl
+            : `http://localhost:5000${res.payment.screenshotUrl}`
+        );
       }
       refreshData();
       showToast('Payment proof submitted successfully! Waiting for Admin verification.', 'success');
     } catch (err) {
       setSubmitting(false);
-      showToast(err.response?.data?.message || err.message || 'Failed to submit payment proof', 'error');
+      const errMsg = err.response?.data?.message || err.message || 'Failed to submit payment proof';
+      showToast(errMsg, 'error');
     }
   };
 
@@ -529,15 +587,26 @@ export const MockPayment = () => {
             <input
               type="text"
               value={txHash}
-              onChange={(e) => setTxHash(e.target.value)}
+              onChange={(e) => {
+                setTxHash(e.target.value);
+                if (txHashError) setTxHashError('');
+              }}
               placeholder={
                 paymentMethod === 'USDT (BEP-20)'
                   ? 'e.g. 0x1234567890abcdef1234567890abcdef...'
                   : 'e.g. UTR 426719823019 or Ref No.'
               }
               disabled={submitting}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 px-4 text-xs font-mono text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-amber-500 disabled:opacity-50"
+              className={`w-full bg-slate-900 border rounded-xl py-3 px-4 text-xs font-mono text-slate-100 placeholder:text-slate-600 focus:outline-none disabled:opacity-50 ${
+                txHashError ? 'border-red-500/80 focus:border-red-500' : 'border-slate-700 focus:border-amber-500'
+              }`}
             />
+            {txHashError && (
+              <span className="text-[11px] text-red-400 font-semibold block flex items-center gap-1">
+                <AlertCircle className="w-3 h-3 text-red-400 shrink-0" />
+                {txHashError}
+              </span>
+            )}
           </div>
 
           {/* Image File Picker & Drag-and-Drop */}
@@ -547,7 +616,9 @@ export const MockPayment = () => {
             </label>
 
             {!screenshotPreview ? (
-              <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-700 hover:border-amber-500/60 rounded-2xl cursor-pointer bg-slate-900/60 hover:bg-slate-900 transition-all text-center space-y-2 group">
+              <label className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl cursor-pointer bg-slate-900/60 hover:bg-slate-900 transition-all text-center space-y-2 group ${
+                screenshotError ? 'border-red-500/80 hover:border-red-500' : 'border-slate-700 hover:border-amber-500/60'
+              }`}>
                 <div className="p-3 rounded-full bg-slate-800 group-hover:bg-amber-500/20 text-slate-400 group-hover:text-amber-400 transition-colors">
                   <Upload className="w-6 h-6" />
                 </div>
@@ -590,6 +661,12 @@ export const MockPayment = () => {
                 </button>
               </div>
             )}
+            {screenshotError && (
+              <span className="text-[11px] text-red-400 font-semibold block flex items-center gap-1">
+                <AlertCircle className="w-3 h-3 text-red-400 shrink-0" />
+                {screenshotError}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-4 pt-2">
@@ -606,7 +683,7 @@ export const MockPayment = () => {
               type="submit"
               variant="emerald"
               isLoading={submitting}
-              disabled={submitting || !txHash.trim()}
+              disabled={submitting}
               className="w-2/3"
               icon={Lock}
             >

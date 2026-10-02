@@ -34,10 +34,10 @@ export const InvestmentDetails = () => {
 
   const timelineSteps = [
     { label: 'Started', percent: 0, completed: true, date: investment.startDate },
-    { label: '25% Progress', percent: 25, completed: (investment.progressPercent || 0) >= 25 },
-    { label: '50% Halfway', percent: 50, completed: (investment.progressPercent || 0) >= 50 },
-    { label: '75% Maturity', percent: 75, completed: (investment.progressPercent || 0) >= 75 },
-    { label: 'Full Maturity', percent: 100, completed: (investment.progressPercent || 0) >= 100, date: investment.maturityDate },
+    { label: '25% Progress', percent: 25, completed: (investment.progressPercent ?? 0) >= 25 },
+    { label: '50% Halfway', percent: 50, completed: (investment.progressPercent ?? 0) >= 50 },
+    { label: '75% Maturity', percent: 75, completed: (investment.progressPercent ?? 0) >= 75 },
+    { label: 'Full Maturity', percent: 100, completed: (investment.progressPercent ?? 0) >= 100, date: investment.maturityDate },
   ];
 
   return (
@@ -64,7 +64,7 @@ export const InvestmentDetails = () => {
           <div className="flex items-center gap-3">
             <Badge status={investment.paymentStatus}>{investment.paymentStatus}</Badge>
             <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-              {investment.rate}% Demo Rate
+              {investment.rate}% Rate
             </span>
           </div>
         </div>
@@ -97,7 +97,7 @@ export const InvestmentDetails = () => {
               Investment Progress Timeline
             </h3>
             <span className="text-xs font-semibold text-indigo-300 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
-              {investment.progressPercent || 5}% Completed
+              {investment.progressPercent ?? 0}% Completed
             </span>
           </div>
 
@@ -106,7 +106,7 @@ export const InvestmentDetails = () => {
             <div className="absolute top-1/2 left-0 right-0 h-1.5 bg-slate-800 -translate-y-1/2 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500"
-                style={{ width: `${investment.progressPercent || 5}%` }}
+                style={{ width: `${investment.progressPercent ?? 0}%` }}
               />
             </div>
 
@@ -131,10 +131,10 @@ export const InvestmentDetails = () => {
           </div>
         </div>
 
-        {/* Demo Notice Disclaimer */}
+        {/* Notice Disclaimer */}
         <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/20 text-xs text-indigo-300 flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
-          <span>All returns displayed are calculated based on fixed demo tier rate rules ({investment.rate}% per annum).</span>
+          <span>All returns displayed are calculated based on fixed tier rate rules ({investment.rate}% per annum).</span>
         </div>
       </div>
     </div>

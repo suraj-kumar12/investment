@@ -28,6 +28,7 @@ import { Investments } from './pages/user/Investments';
 import { NewInvestment } from './pages/user/NewInvestment';
 import { InvestmentDetails } from './pages/user/InvestmentDetails';
 import { MockPayment } from './pages/user/MockPayment';
+import { Withdraw } from './pages/user/Withdraw';
 import { Referrals } from './pages/user/Referrals';
 import { Rewards } from './pages/user/Rewards';
 import { Transactions } from './pages/user/Transactions';
@@ -38,6 +39,7 @@ import { Settings } from './pages/user/Settings';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminUsers } from './pages/admin/AdminUsers';
 import { AdminInvestments } from './pages/admin/AdminInvestments';
+import { AdminWithdrawals } from './pages/admin/AdminWithdrawals';
 import { AdminReferrals } from './pages/admin/AdminReferrals';
 import { AdminRewards } from './pages/admin/AdminRewards';
 import { AdminTransactions } from './pages/admin/AdminTransactions';
@@ -83,6 +85,7 @@ export function App() {
                 <Route path="investments/new" element={<NewInvestment />} />
                 <Route path="investments/:id" element={<InvestmentDetails />} />
                 <Route path="payment/:id" element={<MockPayment />} />
+                <Route path="withdraw" element={<Withdraw />} />
                 <Route path="plans" element={<Plans />} />
                 <Route path="referrals" element={<Referrals />} />
                 <Route path="rewards" element={<Rewards />} />
@@ -103,6 +106,7 @@ export function App() {
                 <Route index element={<AdminDashboard />} />
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="investments" element={<AdminInvestments />} />
+                <Route path="withdrawals" element={<AdminWithdrawals />} />
                 <Route path="referrals" element={<AdminReferrals />} />
                 <Route path="rewards" element={<AdminRewards />} />
                 <Route path="transactions" element={<AdminTransactions />} />

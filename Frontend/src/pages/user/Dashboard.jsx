@@ -12,6 +12,7 @@ import {
   Clock,
   PieChart as PieIcon,
   ShieldAlert,
+  Wallet,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -68,21 +69,21 @@ export const UserDashboard = () => {
   const totalInvestment = activeInvs.reduce((sum, i) => sum + i.amount, 0);
   const totalProfit = activeInvs.reduce((sum, i) => sum + i.profit, 0);
   const totalMaturity = totalInvestment + totalProfit;
-  const referralRewards = refStats?.totalRewards || 500;
+  const referralRewards = refStats?.totalRewards || 0;
 
   // Chart Data Setup
   const growthData = [
-    { month: 'Month 1', value: totalInvestment * 0.2 || 5000 },
-    { month: 'Month 3', value: totalInvestment * 0.45 || 11000 },
-    { month: 'Month 6', value: totalInvestment * 0.7 || 18000 },
-    { month: 'Month 9', value: totalInvestment * 0.88 || 22000 },
-    { month: 'Month 12', value: totalMaturity || 28000 },
+    { month: 'Month 1', value: totalInvestment * 0.2 },
+    { month: 'Month 3', value: totalInvestment * 0.45 },
+    { month: 'Month 6', value: totalInvestment * 0.7 },
+    { month: 'Month 9', value: totalInvestment * 0.88 },
+    { month: 'Month 12', value: totalMaturity },
   ];
 
   const allocationData = [
-    { name: 'Premium (12%)', value: 15000, color: '#6366f1' },
-    { name: 'Growth (10%)', value: 10000, color: '#3b82f6' },
-    { name: 'Starter (8%)', value: 0, color: '#10b981' },
+    { name: 'Premium (12%)', value: totalInvestment * 0.5, color: '#6366f1' },
+    { name: 'Growth (10%)', value: totalInvestment * 0.3, color: '#3b82f6' },
+    { name: 'Starter (8%)', value: totalInvestment * 0.2, color: '#10b981' },
   ];
 
   if (loading) {
@@ -111,11 +112,18 @@ export const UserDashboard = () => {
             Here is your live investment growth overview and referral earnings summary.
           </p>
         </div>
-        <Link to="/dashboard/investments/new">
-          <Button variant="emerald" icon={PlusCircle}>
-            New Investment
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard/withdraw">
+            <Button variant="outline" icon={Wallet}>
+              Withdraw
+            </Button>
+          </Link>
+          <Link to="/dashboard/investments/new">
+            <Button variant="emerald" icon={PlusCircle}>
+              New Investment
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Primary Stat Cards */}
@@ -130,7 +138,7 @@ export const UserDashboard = () => {
         <StatCard
           title="Projected Profit"
           value={formatCurrency(totalProfit)}
-          subtitle="Demo Annual Yield"
+          subtitle="Annual Yield"
           icon={TrendingUp}
           color="emerald"
         />
@@ -154,19 +162,19 @@ export const UserDashboard = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 glass-card p-4 rounded-2xl border border-slate-800">
         <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
           <span className="text-[11px] text-slate-400 font-semibold block">Total Referrals</span>
-          <span className="text-lg font-bold text-white">{refStats?.totalReferrals || 12}</span>
+          <span className="text-lg font-bold text-white">{refStats?.totalReferrals || 0}</span>
         </div>
         <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
           <span className="text-[11px] text-emerald-400 font-semibold block">Successful Referrals</span>
-          <span className="text-lg font-bold text-emerald-400">{refStats?.successfulReferrals || 8}</span>
+          <span className="text-lg font-bold text-emerald-400">{refStats?.successfulReferrals || 0}</span>
         </div>
         <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
           <span className="text-[11px] text-amber-400 font-semibold block">Pending Referrals</span>
-          <span className="text-lg font-bold text-amber-400">{refStats?.pendingReferrals || 3}</span>
+          <span className="text-lg font-bold text-amber-400">{refStats?.pendingReferrals || 0}</span>
         </div>
         <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
-          <span className="text-[11px] text-indigo-400 font-semibold block">Reward Rate</span>
-          <span className="text-lg font-bold text-indigo-400">$100 / Verified</span>
+          <span className="text-[11px] text-indigo-400 font-semibold block">Commission Structure</span>
+          <span className="text-lg font-bold text-indigo-400">4 Tier Levels</span>
         </div>
       </div>
 

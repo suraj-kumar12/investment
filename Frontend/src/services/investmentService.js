@@ -186,7 +186,7 @@ export const investmentService = {
     inv.paymentStatus = 'SUCCESSFUL';
     inv.status = 'ACTIVE';
     inv.paymentMethod = paymentMethod || 'Demo Payment';
-    inv.progressPercent = 5;
+    inv.progressPercent = inv.progressPercent ?? 0;
 
     investments[invIndex] = inv;
     setStoredData('investments', investments);

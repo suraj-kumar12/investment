@@ -12,7 +12,7 @@ export const referralService = {
         }));
       }
     } catch (err) {
-      console.warn('Backend API getReferrals unavailable, falling back to local demo mode');
+      console.warn('Backend API getReferrals unavailable, falling back to local fallback');
     }
 
     const referrals = getStoredData('referrals', []);
@@ -25,7 +25,7 @@ export const referralService = {
       const res = await api.get('/referrals/stats');
       if (res.data) return res.data;
     } catch (err) {
-      console.warn('Backend API getReferralStats unavailable, falling back to local demo mode');
+      console.warn('Backend API getReferralStats unavailable, falling back to local fallback');
     }
 
     const referrals = getStoredData('referrals', []);
