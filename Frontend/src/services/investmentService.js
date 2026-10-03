@@ -95,6 +95,11 @@ export const investmentService = {
     return newInv;
   },
 
+  async createWalletDeposit({ amount, paymentMethod = 'USDT (BEP-20)' }) {
+    const res = await api.post('/payments/deposit', { amount, paymentMethod });
+    return res.data;
+  },
+
   // -------------------------------------------------------------
   // USDT (BEP-20) CRYPTO PAYMENT FLOW
   // -------------------------------------------------------------

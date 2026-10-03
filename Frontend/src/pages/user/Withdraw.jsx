@@ -409,9 +409,9 @@ export const Withdraw = () => {
 
             <div className="space-y-3 text-xs text-slate-300">
               <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-1">
-                <span className="font-bold text-white block">1. Dynamic Balance Check</span>
+                <span className="font-bold text-white block">1. Dynamic Profit Calculation</span>
                 <p className="text-slate-400 leading-relaxed">
-                  Your withdrawable balance includes verified active principal, accrued yield, and credited referral rewards, minus pending/completed payouts.
+                  Active investment principal remains locked until maturity. Your withdrawable balance consists of accrued investment yield, matured returns, and credited referral rewards, minus pending/completed payouts.
                 </p>
               </div>
 
@@ -434,13 +434,25 @@ export const Withdraw = () => {
           {/* Quick Ledger Breakdown */}
           <div className="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/20 space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Total Active Principal:</span>
-              <span className="font-bold text-white">{formatCurrency(balanceData.totalActivePrincipal || 0)}</span>
+              <span className="text-slate-400">Active Principal (Locked):</span>
+              <span className="font-bold text-amber-400">{formatCurrency(balanceData.totalActivePrincipal || 0)}</span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-400">Accrued Yield:</span>
               <span className="font-bold text-emerald-400">+{formatCurrency(balanceData.accruedActiveProfit || 0)}</span>
             </div>
+            {balanceData.totalMatured > 0 && (
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">Matured Payouts:</span>
+                <span className="font-bold text-emerald-400">+{formatCurrency(balanceData.totalMatured)}</span>
+              </div>
+            )}
+            {balanceData.totalRewards > 0 && (
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">Referral Rewards:</span>
+                <span className="font-bold text-purple-400">+{formatCurrency(balanceData.totalRewards)}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between text-xs border-t border-indigo-500/20 pt-2 font-bold">
               <span className="text-indigo-300">Net Available Balance:</span>
               <span className="text-emerald-400 text-sm">{formatCurrency(balanceData.availableBalance || 0)}</span>

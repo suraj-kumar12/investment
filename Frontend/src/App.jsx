@@ -51,6 +51,8 @@ import { AdminSettings } from './pages/admin/AdminSettings';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { AdminRoute } from './routes/AdminRoute';
 
+import { Deposit } from './pages/user/Deposit';
+
 export function App() {
   return (
     <ToastProvider>
@@ -84,6 +86,7 @@ export function App() {
                 <Route path="investments" element={<Investments />} />
                 <Route path="investments/new" element={<NewInvestment />} />
                 <Route path="investments/:id" element={<InvestmentDetails />} />
+                <Route path="deposit" element={<Deposit />} />
                 <Route path="payment/:id" element={<MockPayment />} />
                 <Route path="withdraw" element={<Withdraw />} />
                 <Route path="plans" element={<Plans />} />

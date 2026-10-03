@@ -9,7 +9,7 @@ export const withdrawalService = {
       const res = await api.get('/withdrawals/balance');
       if (res.data) return res.data;
     } catch (err) {
-      console.warn('Backend API getAvailableBalance unavailable, falling back to local demo mode calculation');
+      console.warn('Backend API getAvailableBalance unavailable, calculating from stored user records');
     }
 
     const investments = getStoredData('investments', []).filter((i) => i.paymentStatus === 'SUCCESSFUL');
@@ -25,7 +25,8 @@ export const withdrawalService = {
     );
     const totalWithdrawn = withdrawals.reduce((sum, w) => sum + (w.amount || 0), 0);
 
-    const availableBalance = Math.max(0, Math.round((totalActivePrincipal + accruedActiveProfit + totalRewards - totalWithdrawn) * 100) / 100);
+    // Active principal remains locked. Only accrued profit, rewards, and matured returns are withdrawable minus withdrawals.
+    const availableBalance = Math.max(0, Math.round((accruedActiveProfit + totalRewards - totalWithdrawn) * 100) / 100);
 
     return {
       availableBalance,
@@ -47,7 +48,7 @@ export const withdrawalService = {
       if (err.response && err.response.data && err.response.data.message) {
         throw new Error(err.response.data.message);
       }
-      console.warn('Backend API requestWithdrawal error, attempting demo fallback:', err.message);
+      console.warn('Backend API requestWithdrawal error:', err.message);
     }
 
     const { amount, method, network = 'BEP-20', walletAddress, accountDetails } = data;
@@ -63,7 +64,7 @@ export const withdrawalService = {
       method: method || 'USDT (BEP-20)',
       network,
       token: 'USDT',
-      walletAddress: walletAddress || accountDetails || 'Demo Address',
+      walletAddress: walletAddress || accountDetails || '',
       accountDetails: accountDetails || '',
       status: 'PENDING',
       createdAt: new Date().toISOString(),
@@ -91,7 +92,7 @@ export const withdrawalService = {
         }));
       }
     } catch (err) {
-      console.warn('Backend API getMyWithdrawals unavailable, falling back to demo mode');
+      console.warn('Backend API getMyWithdrawals unavailable, returning stored records');
     }
 
     return getStoredData('withdrawals', []);

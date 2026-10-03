@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Users,
   TrendingUp,
   DollarSign,
   CheckCircle2,
   Gift,
-  Shield,
   Activity,
   Award,
+  Wallet,
+  Clock,
+  ArrowRight,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -27,6 +30,7 @@ import { adminService } from '../../services/adminService';
 import { useData } from '../../context/DataContext';
 
 export const AdminDashboard = () => {
+  const navigate = useNavigate();
   const { refreshTrigger } = useData();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
@@ -61,50 +65,91 @@ export const AdminDashboard = () => {
 
   if (loading) return <Skeleton type="card" />;
 
+  const pendingWalletCount = stats?.pendingWalletDeposits || 0;
+  const pendingTotalCount = stats?.pendingPaymentsCount || 0;
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">System Control Center</h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">Platform-wide financial metrics, user growth, and referral audit logs.</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">System Control Center</h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">Platform-wide financial metrics, user growth, and deposit proof review.</p>
+        </div>
       </div>
+
+      {/* Pending Wallet Deposit Alert Banner */}
+      {pendingWalletCount > 0 && (
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
+              <Wallet className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-400 block">
+                Pending Wallet Deposit Requests ({pendingWalletCount})
+              </span>
+              <p className="text-xs text-slate-300 mt-0.5">
+                {pendingWalletCount} user deposit request(s) awaiting Admin screenshot proof inspection and balance credit.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/admin/investments')}
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 shadow-md"
+          >
+            <span>Review & Approve Now</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Admin Dashboard Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Users"
-          value={stats?.totalUsers || 4}
+          value={stats?.totalUsers || 0}
           subtitle="Registered Investor Accounts"
           icon={Users}
           color="indigo"
         />
         <StatCard
-          title="Total Investments"
-          value={stats?.totalInvestments || 4}
-          subtitle={`${stats?.activeInvestments || 3} Active Portfolio(s)`}
-          icon={TrendingUp}
-          color="cyan"
+          title="Total Wallet Deposits"
+          value={formatCurrency(stats?.totalWalletDepositAmount || 0)}
+          subtitle={`${stats?.pendingWalletDeposits || 0} Deposit Request(s) Pending`}
+          icon={Wallet}
+          color="purple"
         />
         <StatCard
           title="Investment Volume"
-          value={formatCurrency(stats?.totalInvestmentAmount || 420)}
+          value={formatCurrency(stats?.totalInvestmentAmount || 0)}
           subtitle="Verified Capital Invested"
           icon={DollarSign}
           color="emerald"
         />
         <StatCard
           title="Referral Rewards Issued"
-          value={formatCurrency(stats?.totalReferralRewards || 9.60)}
-          subtitle="Verified $1.20 Bonus Credits"
+          value={formatCurrency(stats?.totalReferralRewards || 0)}
+          subtitle="Verified Bonus Credits"
           icon={Gift}
-          color="purple"
+          color="cyan"
         />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
           <div>
-            <span className="text-xs text-slate-400 font-semibold block">Successful Payments</span>
-            <span className="text-2xl font-bold text-emerald-400 mt-1 block">{stats?.successfulPayments || 3}</span>
+            <span className="text-xs text-slate-400 font-semibold block">Pending Payment Reviews</span>
+            <span className="text-2xl font-bold text-amber-400 mt-1 block">{pendingTotalCount}</span>
+          </div>
+          <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <Clock className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+          <div>
+            <span className="text-xs text-slate-400 font-semibold block">Verified Payments</span>
+            <span className="text-2xl font-bold text-emerald-400 mt-1 block">{stats?.successfulPayments || 0}</span>
           </div>
           <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <CheckCircle2 className="w-5 h-5" />
@@ -114,20 +159,10 @@ export const AdminDashboard = () => {
         <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
           <div>
             <span className="text-xs text-slate-400 font-semibold block">Active Investments</span>
-            <span className="text-2xl font-bold text-white mt-1 block">{stats?.activeInvestments || 3}</span>
+            <span className="text-2xl font-bold text-white mt-1 block">{stats?.activeInvestments || 0}</span>
           </div>
           <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             <Activity className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-slate-400 font-semibold block">Matured Investments</span>
-            <span className="text-2xl font-bold text-purple-400 mt-1 block">{stats?.maturedInvestments || 0}</span>
-          </div>
-          <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-            <Award className="w-5 h-5" />
           </div>
         </div>
       </div>
@@ -163,11 +198,13 @@ export const AdminDashboard = () => {
             </ResponsiveContainer>
           </div>
           <div className="flex justify-around text-xs">
-            <span className="text-emerald-400 font-semibold">• Credited $1.20</span>
-            <span className="text-amber-400 font-semibold">• Pending $0</span>
+            <span className="text-emerald-400 font-semibold">• Credited</span>
+            <span className="text-amber-400 font-semibold">• Pending</span>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default AdminDashboard;

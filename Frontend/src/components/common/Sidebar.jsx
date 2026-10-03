@@ -26,6 +26,7 @@ export const Sidebar = ({ onCloseMobile }) => {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Add Money to Wallet', path: '/dashboard/deposit', icon: Wallet },
     { name: 'Investments', path: '/dashboard/investments', icon: TrendingUp },
     { name: 'Investment Plans', path: '/dashboard/plans', icon: PieChart },
     { name: 'Withdraw Funds', path: '/dashboard/withdraw', icon: Wallet },
