@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/common/Button';
 import { Skeleton } from '../../components/common/Skeleton';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency, getImageUrl } from '../../utils/formatters';
 import { investmentService } from '../../services/investmentService';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
@@ -65,11 +65,7 @@ export const MockPayment = () => {
           setPaymentDetails(pm);
           if (pm?.screenshotUrl) {
             setSubmissionState('SUBMITTED');
-            setScreenshotPreview(
-              pm.screenshotUrl.startsWith('http')
-                ? pm.screenshotUrl
-                : `http://localhost:5000${pm.screenshotUrl}`
-            );
+            setScreenshotPreview(getImageUrl(pm.screenshotUrl));
           } else {
             setSubmissionState('FORM');
           }
@@ -84,8 +80,7 @@ export const MockPayment = () => {
     fetchInvAndPayment();
   }, [id]);
 
-  const receivingAddress =
-    paymentDetails?.receivingAddress || '0xA845c0673FF693da2E64Ff10d91c97B63eB8ae2f';
+  const receivingAddress = paymentDetails?.receivingAddress || '';
   const usdtAmount = paymentDetails?.expectedAmount || investment?.amount || 0;
   
   // UPI QR Code payment string
@@ -207,11 +202,7 @@ export const MockPayment = () => {
       setSubmitting(false);
       setSubmissionState('SUBMITTED');
       if (res.payment?.screenshotUrl) {
-        setScreenshotPreview(
-          res.payment.screenshotUrl.startsWith('http')
-            ? res.payment.screenshotUrl
-            : `http://localhost:5000${res.payment.screenshotUrl}`
-        );
+        setScreenshotPreview(getImageUrl(res.payment.screenshotUrl));
       }
       refreshData();
       showToast('Payment proof submitted successfully! Waiting for Admin verification.', 'success');

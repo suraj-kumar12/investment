@@ -102,26 +102,26 @@ export const Investments = () => {
                   <Badge status={inv.paymentStatus}>{inv.paymentStatus}</Badge>
                 </div>
                 <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                  {inv.rate}% Demo Return
+                  4% Every 1st & 15th
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <span className="text-[11px] text-slate-400 uppercase font-semibold">Plan Name</span>
-                  <h4 className="text-base font-bold text-white mt-0.5">{inv.planName}</h4>
+                  <h4 className="text-base font-bold text-white mt-0.5">{inv.planName || 'Standard Investment'}</h4>
                 </div>
                 <div>
                   <span className="text-[11px] text-slate-400 uppercase font-semibold">Principal Amount</span>
                   <h4 className="text-base font-bold text-white mt-0.5">{formatCurrency(inv.amount)}</h4>
                 </div>
                 <div>
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Projected Profit</span>
-                  <h4 className="text-base font-bold text-emerald-400 mt-0.5">+{formatCurrency(inv.profit)}</h4>
+                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Earned Interest</span>
+                  <h4 className="text-base font-bold text-emerald-400 mt-0.5">+{formatCurrency(inv.earnedInterest || 0)}</h4>
                 </div>
                 <div>
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Projected Maturity</span>
-                  <h4 className="text-base font-bold text-white mt-0.5">{formatCurrency(inv.maturityValue)}</h4>
+                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Investment Bonus</span>
+                  <h4 className="text-base font-bold text-cyan-400 mt-0.5">+{formatCurrency(inv.bonusAmount || 0)}</h4>
                 </div>
               </div>
 

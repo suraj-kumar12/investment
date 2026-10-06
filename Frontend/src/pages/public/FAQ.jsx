@@ -10,16 +10,16 @@ export const FAQ = () => {
       a: 'No. This is a portfolio/demo fintech project. All interest returns, rate percentages (8%, 10%, 12%), and maturity values are projected demo values for presentation purposes.',
     },
     {
-      q: 'When do I receive my $100 referral reward?',
-      a: 'You receive $100 ONLY after an eligible user registered with your referral code completes a successful payment/investment. Registration alone yields $0.',
+      q: 'When do I receive my referral rewards?',
+      a: 'You receive multi-level referral rewards (Level 1: 5%, Level 2: 3%, Level 3: 2%, Level 4: 1%) ONLY after an eligible user registered with your referral code completes a successful payment/investment. Registration alone yields $0.',
     },
     {
       q: 'What happens if a referred user registers but payment is pending?',
       a: 'The referral status will display "Payment Pending" and your reward will remain $0 until payment status transitions to "SUCCESSFUL".',
     },
     {
-      q: 'Can the same referred user generate multiple $100 rewards?',
-      a: 'No. The referral rule limits rewards to the first eligible payment per referred user to prevent duplicate crediting.',
+      q: 'Can the same referred user generate duplicate rewards for the same payment?',
+      a: 'No. The referral engine strictly checks for paymentId/investmentId duplicates to prevent double crediting.',
     },
     {
       q: 'Is real money connected to the payment options?',

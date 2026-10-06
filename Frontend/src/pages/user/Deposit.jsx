@@ -69,7 +69,12 @@ export const Deposit = () => {
 
       const pm = response.payment;
       setPaymentId(pm.paymentId || pm.id);
-      setReceivingAddress(pm.receivingAddress || '0xA845c0673FF693da2E64Ff10d91c97B63eB8ae2f');
+      if (pm.receivingAddress) {
+        setReceivingAddress(pm.receivingAddress);
+      } else {
+        const config = await investmentService.getPaymentConfig();
+        setReceivingAddress(config?.receivingAddress || '');
+      }
       setStep(2);
       showToast('Deposit request created! Please transfer funds and upload proof.', 'success');
     } catch (err) {

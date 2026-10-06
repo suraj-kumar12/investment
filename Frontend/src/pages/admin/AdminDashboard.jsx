@@ -25,22 +25,35 @@ import {
 } from 'recharts';
 import { StatCard } from '../../components/common/StatCard';
 import { Skeleton } from '../../components/common/Skeleton';
+import { Button } from '../../components/common/Button';
+import { Modal } from '../../components/common/Modal';
 import { formatCurrency } from '../../utils/formatters';
 import { adminService } from '../../services/adminService';
 import { useData } from '../../context/DataContext';
+import { useToast } from '../../context/ToastContext';
 
 export const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { refreshTrigger } = useData();
+  const { refreshTrigger, refreshAll } = useData();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
+  const [payoutInfo, setPayoutInfo] = useState(null);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [resultModalOpen, setResultModalOpen] = useState(false);
+  const [payoutResult, setPayoutResult] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchAdminStats = async () => {
       setLoading(true);
       try {
-        const data = await adminService.getDashboardStats();
+        const [data, pInfo] = await Promise.all([
+          adminService.getDashboardStats(),
+          adminService.getPayoutInfo(),
+        ]);
         setStats(data);
+        setPayoutInfo(pInfo);
       } catch (err) {
         console.error(err);
       } finally {
@@ -50,17 +63,34 @@ export const AdminDashboard = () => {
     fetchAdminStats();
   }, [refreshTrigger]);
 
-  const userGrowthData = [
-    { month: 'May', users: 12 },
-    { month: 'Jun', users: 24 },
-    { month: 'Jul', users: 45 },
-    { month: 'Aug', users: 78 },
-    { month: 'Sep', users: 120 },
-  ];
+  const handleTriggerPayout = async () => {
+    setSubmitting(true);
+    try {
+      const res = await adminService.processInterestPayout();
+      setPayoutResult(res);
+      setConfirmModalOpen(false);
+      setResultModalOpen(true);
+      showToast(res.message || 'Interest payout processed successfully!', 'success');
+      const pInfo = await adminService.getPayoutInfo();
+      setPayoutInfo(pInfo);
+      if (refreshAll) refreshAll();
+    } catch (err) {
+      showToast(err.response?.data?.message || err.message || 'Failed to process interest payout', 'error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const rewardDistributionData = [
-    { name: 'Credited ($1.20)', value: stats?.totalReferralRewards || 9.60, color: '#10b981' },
-    { name: 'Pending ($0)', value: 3.60, color: '#f59e0b' },
+    { name: 'Referral Rewards', value: stats?.totalReferralRewards ?? 0, color: '#10b981' },
+  ];
+
+  const userGrowthData = stats?.userGrowthData || stats?.userGrowth || [
+    { month: 'Jan', users: Math.max(0, Math.round((stats?.totalUsers || 0) * 0.2)) },
+    { month: 'Feb', users: Math.max(0, Math.round((stats?.totalUsers || 0) * 0.4)) },
+    { month: 'Mar', users: Math.max(0, Math.round((stats?.totalUsers || 0) * 0.6)) },
+    { month: 'Apr', users: Math.max(0, Math.round((stats?.totalUsers || 0) * 0.8)) },
+    { month: 'May', users: stats?.totalUsers || 0 },
   ];
 
   if (loading) return <Skeleton type="card" />;
@@ -103,6 +133,61 @@ export const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Admin Interest Payout Action Card */}
+      <div className="glass-card p-6 rounded-3xl border border-indigo-500/30 space-y-4 shadow-xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+              <Award className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white">Interest Payout</h2>
+              <p className="text-xs text-slate-400">Scheduled 4% simple interest processing for 1st & 15th of month</p>
+            </div>
+          </div>
+          <Button
+            variant="emerald"
+            onClick={() => setConfirmModalOpen(true)}
+            className="font-bold shrink-0"
+            disabled={!payoutInfo?.isPayoutDay}
+          >
+            Calculate & Credit Interest
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+            <span className="text-slate-400 block font-semibold">Payout Date</span>
+            <span className="text-base font-extrabold text-white mt-1 block">
+              {payoutInfo?.currentPayoutDate || 'N/A'}
+            </span>
+            <span className={`text-[11px] font-bold block mt-1 ${payoutInfo?.isPayoutDay ? 'text-emerald-400' : 'text-amber-400'}`}>
+              {payoutInfo?.message || ''}
+            </span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+            <span className="text-slate-400 block font-semibold">Scheduled Rate</span>
+            <span className="text-base font-extrabold text-emerald-400 mt-1 block">
+              4% per payout cycle
+            </span>
+            <span className="text-[11px] text-slate-400 block mt-1">
+              8% Scheduled Monthly Rate (1st & 15th)
+            </span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+            <span className="text-slate-400 block font-semibold">Eligible Active Investments</span>
+            <span className="text-base font-extrabold text-indigo-400 mt-1 block">
+              {payoutInfo?.eligibleCount ?? 0}
+            </span>
+            <span className="text-[11px] text-slate-400 block mt-1">
+              Verified active portfolios
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Admin Dashboard Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
@@ -136,6 +221,7 @@ export const AdminDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
         <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
           <div>
             <span className="text-xs text-slate-400 font-semibold block">Pending Payment Reviews</span>
@@ -165,6 +251,7 @@ export const AdminDashboard = () => {
             <Activity className="w-5 h-5" />
           </div>
         </div>
+        
       </div>
 
       {/* Admin Charts */}
@@ -197,12 +284,87 @@ export const AdminDashboard = () => {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex justify-around text-xs">
-            <span className="text-emerald-400 font-semibold">• Credited</span>
-            <span className="text-amber-400 font-semibold">• Pending</span>
-          </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        title="Confirm Interest Payout Execution"
+      >
+        <div className="space-y-6">
+          <p className="text-sm text-slate-300">
+            Calculate and credit interest for all eligible investments for the current payout cycle?
+          </p>
+
+          <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 text-xs">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Current Payout Cycle:</span>
+              <span className="font-mono text-indigo-400 font-bold">{payoutInfo?.currentPayoutDate}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Scheduled Rate:</span>
+              <span className="text-emerald-400 font-bold">4% per payout cycle</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Eligible Investments:</span>
+              <span className="text-white font-bold">{payoutInfo?.eligibleCount ?? 0}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button variant="secondary" onClick={() => setConfirmModalOpen(false)} className="w-1/2">
+              Cancel
+            </Button>
+            <Button
+              variant="emerald"
+              isLoading={submitting}
+              disabled={submitting}
+              onClick={handleTriggerPayout}
+              className="w-1/2 font-bold"
+            >
+              Confirm & Credit Payout
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Dynamic Results Modal */}
+      <Modal
+        isOpen={resultModalOpen}
+        onClose={() => setResultModalOpen(false)}
+        title="Interest Payout Execution Results"
+      >
+        <div className="space-y-6">
+          <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs">
+            {payoutResult?.message || 'Interest payout completed successfully.'}
+          </div>
+
+          <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 text-xs">
+            <div className="flex justify-between border-b border-slate-800 pb-2">
+              <span className="text-slate-400">Total Investments Processed:</span>
+              <span className="text-white font-bold">{payoutResult?.totalProcessed ?? 0}</span>
+            </div>
+            <div className="flex justify-between border-b border-slate-800 pb-2">
+              <span className="text-slate-400">Total Interest Credited:</span>
+              <span className="text-emerald-400 font-black text-sm">{formatCurrency(payoutResult?.totalCredited ?? 0)}</span>
+            </div>
+            <div className="flex justify-between border-b border-slate-800 pb-2">
+              <span className="text-slate-400">Already Processed (Skipped):</span>
+              <span className="text-amber-400 font-bold">{payoutResult?.alreadyProcessed ?? 0}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Skipped (Zero / Ineligible):</span>
+              <span className="text-slate-300 font-bold">{payoutResult?.skipped ?? 0}</span>
+            </div>
+          </div>
+
+          <Button variant="primary" onClick={() => setResultModalOpen(false)} className="w-full font-bold">
+            Close Summary
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };

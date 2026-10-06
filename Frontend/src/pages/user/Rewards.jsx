@@ -41,33 +41,35 @@ export const Rewards = () => {
       <div>
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Reward Ledger</h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Detailed history of credited $1.20 referral rewards and pending referral bonuses.
+          Detailed history of credited referral rewards and pending referral bonuses.
         </p>
       </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <StatCard
-          title="Total Rewards"
-          value={formatCurrency(stats?.totalRewards || 9.60)}
-          subtitle="All Earned Bonuses"
-          icon={Gift}
-          color="indigo"
-        />
-        <StatCard
-          title="Pending Rewards"
-          value={formatCurrency(stats?.pendingRewards || 1.20)}
-          subtitle="Awaiting Referred Payment"
-          icon={Clock}
-          color="amber"
-        />
-        <StatCard
-          title="Credited Rewards"
-          value={formatCurrency(stats?.creditedRewards || 8.40)}
-          subtitle="Wallet Credited ($1.20 Each)"
-          icon={CheckCircle2}
-          color="emerald"
-        />
+      <StatCard
+  title="Total Rewards"
+  value={formatCurrency(stats?.totalRewards ?? 0)}
+  subtitle="All Earned Bonuses"
+  icon={Gift}
+  color="indigo"
+/>
+
+<StatCard
+  title="Pending Rewards"
+  value={formatCurrency(stats?.pendingRewards ?? 0)}
+  subtitle="Awaiting Referred Payment"
+  icon={Clock}
+  color="amber"
+/>
+
+<StatCard
+  title="Credited Rewards"
+  value={formatCurrency(stats?.creditedRewards ?? 0)}
+  subtitle="Wallet Credited"
+  icon={CheckCircle2}
+  color="emerald"
+/>
       </div>
 
       {/* Reward Notice Box */}

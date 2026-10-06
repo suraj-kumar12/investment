@@ -40,17 +40,17 @@ export const Footer = () => {
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">Information</h4>
             <Link to="/faq" className="text-sm hover:text-white transition-colors">Frequently Asked Questions</Link>
             <Link to="/contact" className="text-sm hover:text-white transition-colors">Support & Contact</Link>
-            <Link to="/register?ref=SUR123" className="text-sm hover:text-white transition-colors text-indigo-400 font-medium">Demo Referral Link</Link>
+            <Link to="/register" className="text-sm hover:text-white transition-colors text-indigo-400 font-medium">Create Account</Link>
           </div>
 
           {/* Referral Notice Card */}
           <div className="glass-card p-4 rounded-xl border border-slate-800 flex flex-col gap-3">
             <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold uppercase tracking-wider">
               <Gift className="w-4 h-4" />
-              <span>Referral Rule</span>
+              <span>Referral Structure</span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Earn <strong className="text-emerald-400 font-bold">$100</strong> per referred user after their eligible payment verification succeeds. Registration alone returns $0.
+              Earn multi-level referral commissions (<strong className="text-emerald-400 font-bold">5% Level 1, 3% Level 2, 2% Level 3, 1% Level 4</strong>) after eligible payment verification succeeds. Registration alone returns $0.
             </p>
           </div>
         </div>

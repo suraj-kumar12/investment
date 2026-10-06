@@ -161,29 +161,29 @@ export const NewInvestment = () => {
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
                 <Calculator className="w-4 h-4" />
-                Projected Return Breakdown
+                Scheduled Payout Overview
               </span>
               <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                {calc.planName} Tier
+                4% Every 1st & 15th
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-xs text-slate-400 block">Applicable Rate</span>
-                <span className="text-lg font-bold text-emerald-400">{calc.rate}% Annual Return</span>
+                <span className="text-xs text-slate-400 block">Interest Rate</span>
+                <span className="text-lg font-bold text-emerald-400">4% per payout cycle</span>
               </div>
               <div>
-                <span className="text-xs text-slate-400 block">Projected 1-Yr Profit</span>
-                <span className="text-lg font-bold text-indigo-300">+{formatCurrency(calc.profit)}</span>
+                <span className="text-xs text-slate-400 block">Payout Schedule</span>
+                <span className="text-sm font-semibold text-indigo-300">1st & 15th of every month</span>
               </div>
               <div>
-                <span className="text-xs text-slate-400 block">Projected Maturity</span>
-                <span className="text-xl font-black text-white">{formatCurrency(calc.maturityValue)}</span>
+                <span className="text-xs text-slate-400 block">Cycle Payout Amount</span>
+                <span className="text-xl font-black text-white">{formatCurrency(numAmount * 0.04)}</span>
               </div>
               <div>
-                <span className="text-xs text-slate-400 block">Estimated Maturity Date</span>
-                <span className="text-sm font-semibold text-slate-300">{formatDate(estimatedMaturityDate)}</span>
+                <span className="text-xs text-slate-400 block">Scheduled Monthly Rate</span>
+                <span className="text-sm font-semibold text-emerald-400">8% Monthly ({formatCurrency(numAmount * 0.08)})</span>
               </div>
             </div>
           </div>
@@ -210,11 +210,10 @@ export const NewInvestment = () => {
 
           <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 text-xs">
             <div className="flex justify-between"><span className="text-slate-400">Investor:</span><span className="text-white font-bold">{user?.name}</span></div>
-            <div className="flex justify-between"><span className="text-slate-400">Plan Tier:</span><span className="text-indigo-400 font-bold">{calc.planName}</span></div>
             <div className="flex justify-between"><span className="text-slate-400">Investment Amount:</span><span className="text-white font-bold">{formatCurrency(numAmount)}</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Interest Rate:</span><span className="text-emerald-400 font-bold">4% per payout cycle (1st & 15th)</span></div>
             <div className="flex justify-between"><span className="text-slate-400">Current Wallet Balance:</span><span className="text-emerald-400 font-bold">{formatCurrency(walletBalance)}</span></div>
             <div className="flex justify-between border-t border-slate-800 pt-2"><span className="text-slate-400 font-bold">Wallet Balance After:</span><span className="text-emerald-400 font-bold">{formatCurrency(remainingWalletBalance)}</span></div>
-            <div className="flex justify-between text-sm pt-1"><span className="font-bold text-white">Maturity Amount:</span><span className="font-black text-emerald-400">{formatCurrency(calc.maturityValue)}</span></div>
           </div>
 
           <div className="flex items-center gap-3">

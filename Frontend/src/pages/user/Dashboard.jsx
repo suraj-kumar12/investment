@@ -47,6 +47,7 @@ export const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [investments, setInvestments] = useState([]);
   const [refStats, setRefStats] = useState(null);
+  const [summary, setSummary] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,8 +55,10 @@ export const UserDashboard = () => {
       try {
         const invs = await investmentService.getInvestments(user?.id);
         const rStats = await referralService.getReferralStats(user?.id);
+        const sumData = await investmentService.getDashboardSummary();
         setInvestments(invs);
         setRefStats(rStats);
+        setSummary(sumData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -66,8 +69,8 @@ export const UserDashboard = () => {
   }, [user?.id, refreshTrigger]);
 
   const activeInvs = investments.filter((i) => i.paymentStatus === 'SUCCESSFUL');
-  const totalInvestment = activeInvs.reduce((sum, i) => sum + i.amount, 0);
-  const totalProfit = activeInvs.reduce((sum, i) => sum + i.profit, 0);
+  const totalInvestment = summary?.totalInvestment ?? activeInvs.reduce((sum, i) => sum + i.amount, 0);
+  const totalProfit = summary?.totalProfit ?? activeInvs.reduce((sum, i) => sum + i.profit, 0);
   const totalMaturity = totalInvestment + totalProfit;
   const referralRewards = refStats?.totalRewards || 0;
 
@@ -89,7 +92,9 @@ export const UserDashboard = () => {
   if (loading) {
     return (
       <div className="space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Skeleton type="card" />
+          <Skeleton type="card" />
           <Skeleton type="card" />
           <Skeleton type="card" />
           <Skeleton type="card" />
@@ -126,35 +131,49 @@ export const UserDashboard = () => {
         </div>
       </div>
 
-      {/* Primary Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Primary Wallet & Investment Metrics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard
-          title="Total Investment"
-          value={formatCurrency(totalInvestment)}
-          subtitle={`${activeInvs.length} Active Plan(s)`}
-          icon={DollarSign}
+          title="Available Wallet Balance"
+          value={formatCurrency(summary?.walletBalance ?? user?.walletBalance ?? 0)}
+          subtitle="Ready to Invest / Withdraw"
+          icon={Wallet}
           color="indigo"
         />
         <StatCard
-          title="Projected Profit"
-          value={formatCurrency(totalProfit)}
-          subtitle="Annual Yield"
+          title="Pending Deposit"
+          value={formatCurrency(summary?.pendingDeposits ?? 0)}
+          subtitle="Awaiting Admin Review"
+          icon={Clock}
+          color="amber"
+        />
+        <StatCard
+          title="Total Investment"
+          value={formatCurrency(summary?.totalInvestment ?? 0)}
+          subtitle={`${summary?.activeInvestmentsCount ?? activeInvs.length} Active Plan(s)`}
+          icon={DollarSign}
+          color="purple"
+        />
+        <StatCard
+          title="Investment Bonus"
+          value={formatCurrency(summary?.investmentBonus ?? 0)}
+          subtitle="One-time 5% Active Bonus"
+          icon={Gift}
+          color="cyan"
+        />
+        <StatCard
+          title="Earned Interest"
+          value={formatCurrency(summary?.earnedInterest ?? 0)}
+          subtitle="4% Simple Interest per 15 Days"
           icon={TrendingUp}
           color="emerald"
         />
         <StatCard
-          title="Projected Maturity"
-          value={formatCurrency(totalMaturity)}
-          subtitle="Estimated 1-Year Value"
+          title="Available WITHDRAWABLE BALANCE"
+          value={formatCurrency(summary?.withdrawableProfit ?? 0)}
+          subtitle="Total Ledger Balance Available"
           icon={Award}
-          color="cyan"
-        />
-        <StatCard
-          title="Referral Rewards"
-          value={formatCurrency(referralRewards)}
-          subtitle={`${refStats?.successfulReferrals || 0} Credited Reward(s)`}
-          icon={Gift}
-          color="purple"
+          color="blue"
         />
       </div>
 

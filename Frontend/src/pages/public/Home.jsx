@@ -23,17 +23,17 @@ import { useAuth } from '../../context/AuthContext';
 export const Home = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { isAuthenticated, isAdmin } = useAuth();
+  const { user, isAuthenticated, isAdmin } = useAuth();
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  const demoReferralCode = 'SUR123';
+  const demoReferralCode = user?.referralCode || 'REFC123';
   const demoReferralLink = `${window.location.origin}/register?ref=${demoReferralCode}`;
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(demoReferralCode);
     setCopiedCode(true);
-    showToast('Referral code SUR123 copied to clipboard!', 'success');
+    showToast(`Referral code ${demoReferralCode} copied to clipboard!`, 'success');
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
@@ -211,78 +211,64 @@ export const Home = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-            Transparent Pricing
+            Transparent Earnings
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Investment Plans
+            Investment Plan
           </h2>
           <p className="text-slate-400 text-sm sm:text-base">
-            Select an investment tier tailored to your portfolio goals. All yields are calculated on a demo 1-year annual return model.
+            Earn 4% simple interest on the 1st and 15th of every month (8% total monthly return).
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-          {INVESTMENT_PLANS.map((plan) => {
-            const sampleAmount = plan.minAmount;
-            const profit = (sampleAmount * plan.rate) / 100;
-            const maturity = sampleAmount + profit;
+        <div className="max-w-xl mx-auto">
+          {INVESTMENT_PLANS.map((plan) => (
+            <div
+              key={plan.id}
+              className="glass-card rounded-3xl p-8 flex flex-col justify-between relative border-2 border-indigo-500 shadow-2xl shadow-indigo-600/20"
+            >
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
+                {plan.badge}
+              </div>
 
-            return (
-              <div
-                key={plan.id}
-                className={`glass-card rounded-3xl p-8 flex flex-col justify-between relative transition-all duration-300 ${
-                  plan.isPopular ? 'border-2 border-indigo-500 shadow-2xl shadow-indigo-600/20 scale-105 z-10' : ''
-                }`}
-              >
-                {plan.isPopular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
-                    {plan.badge}
-                  </div>
-                )}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
+                  <p className="text-xs text-slate-400 mt-1">{plan.description}</p>
+                </div>
 
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
-                    <p className="text-xs text-slate-400 mt-1">{plan.description}</p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-                    <span className="text-xs font-medium text-slate-400">Investment Range</span>
-                    <div className="text-xl font-extrabold text-white">
-                      {formatCurrency(plan.minAmount)} {plan.maxAmount < 10000 ? `– ${formatCurrency(plan.maxAmount)}` : '+'}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 pt-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-400">Demo Return Rate</span>
-                      <span className="font-bold text-emerald-400">{plan.rate}% Annual</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-400">Duration</span>
-                      <span className="font-medium text-slate-200">{plan.duration}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm border-t border-slate-800 pt-3">
-                      <span className="text-slate-400">Sample Profit ({formatCurrency(sampleAmount)})</span>
-                      <span className="font-bold text-indigo-400">+{formatCurrency(profit)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-400">Sample Maturity</span>
-                      <span className="font-extrabold text-white">{formatCurrency(maturity)}</span>
-                    </div>
+                <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+                  <span className="text-xs font-medium text-slate-400">Minimum Investment</span>
+                  <div className="text-2xl font-extrabold text-white">
+                    {formatCurrency(plan.minAmount)} +
                   </div>
                 </div>
 
-                <div className="pt-8">
-                  <Link to={isAuthenticated ? (isAdmin ? '/admin' : `/dashboard/investments/new?plan=${plan.id}`) : '/register'}>
-                    <Button variant={plan.isPopular ? 'primary' : 'secondary'} className="w-full">
-                      Invest Now
-                    </Button>
-                  </Link>
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400">Interest Rate</span>
+                    <span className="font-bold text-emerald-400">4% per payout cycle</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400">Payout Schedule</span>
+                    <span className="font-semibold text-white">1st & 15th of every month</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm border-t border-slate-800 pt-3">
+                    <span className="text-slate-400">Scheduled Monthly Rate</span>
+                    <span className="font-extrabold text-indigo-400">8% Monthly</span>
+                  </div>
                 </div>
               </div>
-            );
-          })}
+
+              <div className="pt-8">
+                <Link to={isAuthenticated ? (isAdmin ? '/admin' : `/dashboard/investments/new?plan=${plan.id}`) : '/register'}>
+                  <Button variant="primary" className="w-full font-bold py-3.5">
+                    Start Investment Now
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

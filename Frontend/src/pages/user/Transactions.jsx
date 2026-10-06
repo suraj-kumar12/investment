@@ -24,7 +24,7 @@ export const Transactions = () => {
     const fetchTxns = async () => {
       setLoading(true);
       try {
-        const data = await transactionService.getTransactions(user?.id, {
+        const data = await transactionService.getTransactions({
           type: typeFilter,
           status: statusFilter,
           search,
@@ -44,7 +44,7 @@ export const Transactions = () => {
       <div>
         <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Transaction History</h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Complete ledger of investments, referral credits, maturity payouts, and mock transactions.
+          Complete ledger of investments, referral credits, maturity payouts, and wallet deposits.
         </p>
       </div>
 
@@ -68,9 +68,11 @@ export const Transactions = () => {
               className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none"
             >
               <option value="ALL">All Transaction Types</option>
+              <option value="Wallet Deposit">Wallet Deposit</option>
               <option value="Investment">Investment</option>
+              <option value="Interest Credit">Interest Credit</option>
+              <option value="Investment Bonus">Investment Bonus</option>
               <option value="Referral Reward">Referral Reward</option>
-              <option value="Maturity">Maturity</option>
               <option value="Withdrawal">Withdrawal</option>
             </select>
           </div>
@@ -121,7 +123,7 @@ export const Transactions = () => {
                     <td className="py-3.5 px-4 font-mono font-bold text-indigo-400">{txn.id}</td>
                     <td className="py-3.5 px-4">{txn.type}</td>
                     <td className="py-3.5 px-4 font-bold text-white">
-                      {txn.type === 'Referral Reward' ? (
+                      {['Referral Reward', 'Interest Credit', 'INTEREST_CREDIT', 'Investment Bonus', 'Wallet Deposit'].includes(txn.type) ? (
                         <span className="text-emerald-400">+{formatCurrency(txn.amount)}</span>
                       ) : (
                         formatCurrency(txn.amount)

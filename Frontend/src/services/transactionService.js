@@ -1,46 +1,27 @@
 import api from './api';
-import { getStoredData } from './mockData';
 
 export const transactionService = {
-  async getTransactions(userId, { type = 'ALL', status = 'ALL', search = '' } = {}) {
-    try {
-      const res = await api.get('/transactions', {
-        params: { type, status, search },
-      });
-      if (res.data) {
-        return res.data.map((t) => ({
-          ...t,
-          id: t.transactionId || t._id,
-        }));
-      }
-    } catch (err) {
-      console.warn('Backend API getTransactions unavailable, falling back to local demo mode');
+  async getTransactions(arg1 = {}, arg2 = {}) {
+    // Flexibly support getTransactions(filters) or getTransactions(userId, filters)
+    const filters = typeof arg1 === 'object' && arg1 !== null ? arg1 : (typeof arg2 === 'object' && arg2 !== null ? arg2 : {});
+    const { type = 'ALL', status = 'ALL', search = '' } = filters;
+
+    const res = await api.get('/transactions', {
+      params: { type, status, search },
+    });
+
+    if (Array.isArray(res.data)) {
+      return res.data.map((t) => ({
+        ...t,
+        id: t.transactionId || t._id,
+      }));
+    } else if (res.data?.transactions && Array.isArray(res.data.transactions)) {
+      return res.data.transactions.map((t) => ({
+        ...t,
+        id: t.transactionId || t._id,
+      }));
     }
 
-    let transactions = getStoredData('transactions', []);
-
-    if (userId) {
-      transactions = transactions.filter((t) => t.userId === userId);
-    }
-
-    if (type !== 'ALL') {
-      transactions = transactions.filter((t) => t.type.toLowerCase() === type.toLowerCase());
-    }
-
-    if (status !== 'ALL') {
-      transactions = transactions.filter((t) => t.status.toLowerCase() === status.toLowerCase());
-    }
-
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      transactions = transactions.filter(
-        (t) =>
-          t.id.toLowerCase().includes(q) ||
-          t.type.toLowerCase().includes(q) ||
-          (t.reference && t.reference.toLowerCase().includes(q))
-      );
-    }
-
-    return transactions;
+    return [];
   },
 };

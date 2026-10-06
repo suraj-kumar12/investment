@@ -58,13 +58,13 @@ export const InvestmentDetails = () => {
       <div className="glass-card p-8 rounded-3xl border border-slate-800 space-y-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase">Plan Tier</span>
-            <h2 className="text-3xl font-extrabold text-white mt-0.5">{investment.planName} Plan</h2>
+            <span className="text-xs font-semibold text-slate-400 uppercase">Investment Plan</span>
+            <h2 className="text-3xl font-extrabold text-white mt-0.5">{investment.planName || 'Standard Investment'}</h2>
           </div>
           <div className="flex items-center gap-3">
             <Badge status={investment.paymentStatus}>{investment.paymentStatus}</Badge>
             <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-              {investment.rate}% Rate
+              4% Every 1st & 15th
             </span>
           </div>
         </div>
@@ -76,65 +76,39 @@ export const InvestmentDetails = () => {
             <span className="text-xl font-bold text-white mt-1 block">{formatCurrency(investment.amount)}</span>
           </div>
           <div>
-            <span className="text-xs text-slate-400 block">Projected Profit</span>
-            <span className="text-xl font-bold text-emerald-400 mt-1 block">+{formatCurrency(investment.profit)}</span>
+            <span className="text-xs text-slate-400 block">Earned Interest</span>
+            <span className="text-xl font-bold text-emerald-400 mt-1 block">+{formatCurrency(investment.earnedInterest || 0)}</span>
           </div>
           <div>
-            <span className="text-xs text-slate-400 block">Maturity Value</span>
-            <span className="text-xl font-black text-white mt-1 block">{formatCurrency(investment.maturityValue)}</span>
+            <span className="text-xs text-slate-400 block">Investment Bonus</span>
+            <span className="text-xl font-black text-cyan-400 mt-1 block">+{formatCurrency(investment.bonusAmount || 0)}</span>
           </div>
           <div>
-            <span className="text-xs text-slate-400 block">Maturity Date</span>
-            <span className="text-sm font-semibold text-slate-300 mt-1 block">{formatDate(investment.maturityDate)}</span>
+            <span className="text-xs text-slate-400 block">Activation Date</span>
+            <span className="text-sm font-semibold text-slate-300 mt-1 block">{formatDate(investment.startDate || investment.createdAt)}</span>
           </div>
         </div>
 
-        {/* Visual Progress Timeline Section */}
-        <div className="space-y-4 pt-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Clock className="w-4 h-4 text-indigo-400" />
-              Investment Progress Timeline
-            </h3>
-            <span className="text-xs font-semibold text-indigo-300 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
-              {investment.progressPercent ?? 0}% Completed
-            </span>
+        {/* Schedule & Rate Info Box */}
+        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <span className="text-slate-400 block">Interest Rate:</span>
+            <span className="text-sm font-bold text-emerald-400">4% per payout cycle</span>
           </div>
-
-          <div className="relative py-8">
-            {/* Timeline Horizontal Line */}
-            <div className="absolute top-1/2 left-0 right-0 h-1.5 bg-slate-800 -translate-y-1/2 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500"
-                style={{ width: `${investment.progressPercent ?? 0}%` }}
-              />
-            </div>
-
-            {/* Timeline Step Circles */}
-            <div className="relative z-10 flex justify-between">
-              {timelineSteps.map((step, idx) => (
-                <div key={idx} className="flex flex-col items-center text-center">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs border-2 transition-all ${
-                      step.completed
-                        ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg shadow-indigo-600/30'
-                        : 'bg-slate-900 border-slate-700 text-slate-500'
-                    }`}
-                  >
-                    {step.completed ? <CheckCircle2 className="w-5 h-5" /> : `${step.percent}%`}
-                  </div>
-                  <span className="text-xs font-semibold text-slate-300 mt-2">{step.label}</span>
-                  {step.date && <span className="text-[10px] text-slate-500 mt-0.5">{formatDate(step.date)}</span>}
-                </div>
-              ))}
-            </div>
+          <div>
+            <span className="text-slate-400 block">Payout Schedule:</span>
+            <span className="text-sm font-bold text-indigo-300">1st & 15th of every month</span>
+          </div>
+          <div>
+            <span className="text-slate-400 block">Scheduled Monthly Rate:</span>
+            <span className="text-sm font-bold text-white">8% Monthly</span>
           </div>
         </div>
 
         {/* Notice Disclaimer */}
         <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/20 text-xs text-indigo-300 flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
-          <span>All returns displayed are calculated based on fixed tier rate rules ({investment.rate}% per annum).</span>
+          <span>Interest is calculated from original principal and credited on the 1st and 15th of every month via admin payout processing.</span>
         </div>
       </div>
     </div>

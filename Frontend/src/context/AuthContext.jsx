@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     const res = await authService.register(userData);
-    setUser(res.user);
     return res;
   };
 
@@ -49,17 +48,6 @@ export const AuthProvider = ({ children }) => {
     return updated;
   };
 
-  // Quick switch for demo testing between user and admin
-  const switchDemoRole = async (targetRole = 'admin') => {
-    if (targetRole === 'admin') {
-      const adminUser = await authService.login({ email: 'admin@investment.com', password: 'password' });
-      return adminUser;
-    } else {
-      const normalUser = await authService.login({ email: 'suraj@example.com', password: 'password' });
-      return normalUser;
-    }
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -71,7 +59,6 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updateProfile,
-        switchDemoRole,
       }}
     >
       {children}

@@ -15,25 +15,33 @@ export const AdminPlans = () => {
         <Button variant="emerald" icon={Plus}>Add New Plan</Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {INVESTMENT_PLANS.map((plan) => (
           <div key={plan.id} className="glass-card p-6 rounded-3xl border border-slate-800 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-xl font-bold text-white">{plan.name}</h3>
               <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-                {plan.rate}% Demo Rate
+                4% Every 1st & 15th
               </span>
             </div>
             <p className="text-xs text-slate-400">{plan.description}</p>
 
             <div className="space-y-2 text-xs">
               <div className="flex justify-between text-slate-400">
-                <span>Range:</span>
-                <span className="text-white font-bold">{formatCurrency(plan.minAmount)} – {plan.maxAmount < 1000000 ? formatCurrency(plan.maxAmount) : '+'}</span>
+                <span>Minimum Investment:</span>
+                <span className="text-white font-bold">{formatCurrency(plan.minAmount)} +</span>
               </div>
               <div className="flex justify-between text-slate-400">
-                <span>Duration:</span>
-                <span className="text-white">{plan.duration}</span>
+                <span>Cycle Interest Rate:</span>
+                <span className="text-emerald-400 font-bold">4% per payout cycle</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Payout Schedule:</span>
+                <span className="text-indigo-300 font-semibold">1st & 15th of every month</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Scheduled Monthly Rate:</span>
+                <span className="text-white font-bold">8% Monthly</span>
               </div>
             </div>
 

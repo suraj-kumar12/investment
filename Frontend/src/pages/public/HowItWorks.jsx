@@ -24,7 +24,7 @@ export const HowItWorks = () => {
     {
       num: '04',
       title: 'Refer & Earn',
-      description: 'Share your code. Receive a $100 referral reward ONLY after an eligible referred payment completes.',
+      description: 'Share your code. Receive multi-level referral rewards (5% Level 1, 3% Level 2, 2% Level 3, 1% Level 4) ONLY after an eligible referred payment completes.',
       icon: Gift,
     },
   ];
@@ -39,7 +39,7 @@ export const HowItWorks = () => {
           How ApexInvest Works
         </h1>
         <p className="text-slate-300 text-base sm:text-lg">
-          Understand the end-to-end flow of investing, tracking progress, and unlocking $100 referral rewards.
+          Understand the end-to-end flow of investing, tracking progress, and unlocking multi-level referral rewards.
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export const HowItWorks = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-center text-xs font-semibold">
           <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
-            User A shares SUR123
+            User A shares referral link
           </div>
           <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
             User B registers
@@ -85,7 +85,7 @@ export const HowItWorks = () => {
             User B completes payment
           </div>
           <div className="p-3 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 font-bold">
-            User A gets $100
+            User A earns referral reward
           </div>
         </div>
       </div>

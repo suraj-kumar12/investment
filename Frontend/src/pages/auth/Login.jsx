@@ -52,7 +52,7 @@ export const Login = () => {
             label="Email Address"
             type="email"
             icon={Mail}
-            placeholder="suraj@example.com"
+            placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
