@@ -88,10 +88,28 @@ export const AdminInvestments = () => {
         adminService.getAllInvestments(),
         adminService.getAllPayments(),
       ]);
-      setInvestments(invsData || []);
-      setPayments(pmtsData || []);
+
+      const investmentList = Array.isArray(invsData)
+        ? invsData
+        : Array.isArray(invsData?.investments)
+        ? invsData.investments
+        : Array.isArray(invsData?.data)
+        ? invsData.data
+        : [];
+
+      const paymentList = Array.isArray(pmtsData)
+        ? pmtsData
+        : Array.isArray(pmtsData?.payments)
+        ? pmtsData.payments
+        : Array.isArray(pmtsData?.data)
+        ? pmtsData.data
+        : [];
+
+      setInvestments(investmentList);
+      setPayments(paymentList);
     } catch (err) {
-      console.error('Error fetching admin investments or payments:', err);
+      console.error('Failed to fetch admin investments or payments:', err);
+      showToast('Failed to fetch investments or payments data', 'error');
     } finally {
       setLoading(false);
     }
@@ -187,13 +205,15 @@ export const AdminInvestments = () => {
       (activeTab === 'WALLET_DEPOSIT' && item.type === 'WALLET_DEPOSIT') ||
       (activeTab === 'INVESTMENT' && item.type === 'INVESTMENT');
 
-    const searchLower = search.toLowerCase();
+    const searchLower = (search || '').toLowerCase().trim();
+    if (!searchLower) return matchesTab;
+
     const matchesSearch =
-      item.id.toLowerCase().includes(searchLower) ||
-      item.userName.toLowerCase().includes(searchLower) ||
-      item.userEmail.toLowerCase().includes(searchLower) ||
-      item.typeLabel.toLowerCase().includes(searchLower) ||
-      item.transactionHash.toLowerCase().includes(searchLower);
+      String(item.id || '').toLowerCase().includes(searchLower) ||
+      String(item.userName || '').toLowerCase().includes(searchLower) ||
+      String(item.userEmail || '').toLowerCase().includes(searchLower) ||
+      String(item.typeLabel || '').toLowerCase().includes(searchLower) ||
+      String(item.transactionHash || '').toLowerCase().includes(searchLower);
 
     return matchesTab && matchesSearch;
   });

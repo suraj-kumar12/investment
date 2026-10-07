@@ -32,17 +32,44 @@ export const adminService = {
     };
   },
 
-  async getAllInvestments() {
-    const res = await api.get('/admin/investments');
-    return (res.data || []).map((i) => ({
+  async getAllInvestments(params) {
+    const res = await api.get('/admin/investments', { params });
+    const rawData = res.data;
+    const rawList = Array.isArray(rawData)
+      ? rawData
+      : Array.isArray(rawData?.investments)
+      ? rawData.investments
+      : Array.isArray(rawData?.data)
+      ? rawData.data
+      : [];
+
+    const normalized = rawList.map((i) => ({
       ...i,
       id: i.investmentId || i._id,
     }));
+
+    if (rawData && rawData.pagination) {
+      return {
+        investments: normalized,
+        pagination: rawData.pagination,
+      };
+    }
+
+    return normalized;
   },
 
   async getAllPayments() {
     const res = await api.get('/admin/payments');
-    return (res.data || []).map((p) => ({
+    const rawData = res.data;
+    const rawList = Array.isArray(rawData)
+      ? rawData
+      : Array.isArray(rawData?.payments)
+      ? rawData.payments
+      : Array.isArray(rawData?.data)
+      ? rawData.data
+      : [];
+
+    return rawList.map((p) => ({
       ...p,
       id: p.paymentId || p._id,
     }));
