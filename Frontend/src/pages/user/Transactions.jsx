@@ -61,11 +61,10 @@ export const Transactions = () => {
           </div>
 
           <div className="sm:col-span-3 flex flex-col gap-1">
-            <label className="text-[10px] font-semibold text-slate-400 uppercase">Type Filter</label>
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 px-3 text-xs text-slate-200 focus:outline-none"
             >
               <option value="ALL">All Transaction Types</option>
               <option value="Wallet Deposit">Wallet Deposit</option>
@@ -78,11 +77,11 @@ export const Transactions = () => {
           </div>
 
           <div className="sm:col-span-4 flex flex-col gap-1">
-            <label className="text-[10px] font-semibold text-slate-400 uppercase">Status Filter</label>
+
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 px-3 text-xs text-slate-200 focus:outline-none"
             > 
               <option value="ALL">All Statuses</option>
               <option value="Successful">Successful</option>
